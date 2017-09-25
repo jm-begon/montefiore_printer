@@ -27,7 +27,7 @@ class Printer(object):
                                        orientation=self.orientation,
                                        paper=self.paper)
 
-    def get_lrp_options(self):
+    def get_lpr_options(self):
         options = ["-o media={}".format(self.paper),
                    "-#{}".format(self.n_copies)]
         if self.color:
@@ -37,18 +37,20 @@ class Printer(object):
             options.append("-o landscape")
 
         if self.one_sided:
+            options.append("-o sides=one-sided")
+        else:
             if self.orientation == Orientation.LANDSCAPE:
                 options.append("-o sides=two-sided-short-edge")
             else:
                 options.append("-o sides=two-sided-long-edge")
 
-        return ["lrp"] + options
+        return ["lpr"] + options
 
     def __str__(self):
-        return " ".join(self.get_lrp_options())
+        return " ".join(self.get_lpr_options())
 
     def print_document(self, fpath):
-        response = subprocess.check_call(self.get_lrp_options() + [fpath])
+        response = subprocess.check_call(self.get_lpr_options() + [fpath])
         return "OK" if response == 0 else "*** RETURN CODE:{} ***".format(
             str(response))
 
@@ -76,11 +78,11 @@ class GatewayPrinter(Printer):
                                        paper=self.paper)
 
     def __str__(self):
-        return " ".join(self.get_lrp_options()) + " {document} | ssh"
+        return " ".join(self.get_lpr_options()) + " {document} | ssh"
 
     def print_document(self, fpath):
         with open(fpath) as hdl:
-            response = subprocess.check_call(("ssh", self.gateway, "lpr {options}".format(options=" ".join(self.get_lrp_options()))),
-                                         stdin=hdl.read())
+            response = subprocess.check_call(("ssh", self.gateway, "{options}".format(options=" ".join(self.get_lpr_options()))),
+                                             stdin=hdl)
             return "OK" if response == 0 else "*** RETURN CODE:{} ***".format(
                 str(response))

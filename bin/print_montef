@@ -8,9 +8,15 @@ from montefiore_printer import Orientation, GatewayPrinter
 __author__ = "Begon Jean-Michel <jm.begon@gmail.com>"
 __copyright__ = "3-clause BSD License"
 
+__DESCRIPTION__ = "Montefiore printing script. For information about the " \
+                  "printing status, check command `lpstat` (in particular " \
+                  "(through the gateway): lpstat -t). To remove a job check " \
+                  "command `lprm`."
+
 
 def main(arguments):
-    parser = argparse.ArgumentParser(description="Montefiore printing script")
+
+    parser = argparse.ArgumentParser(description=__DESCRIPTION__)
     parser.add_argument("docs", help="Path to the document to prints",
                         nargs="+")
     parser.add_argument("-c", "--color", default=False, action="store_true",
